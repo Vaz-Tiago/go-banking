@@ -2,6 +2,8 @@ package app
 
 import (
 	"fmt"
+	"github.com/vaz-tiago/go-banking/domain"
+	"github.com/vaz-tiago/go-banking/service"
 	"log"
 	"net/http"
 
@@ -10,11 +12,13 @@ import (
 
 func Start() {
 	router := mux.NewRouter()
-		// define routes
-	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
-	router.HandleFunc("/customers", createCustomer).Methods(http.MethodPost)
-	router.HandleFunc("/customers", getAllCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", getCustomer).Methods(http.MethodGet)
+
+	// wiring
+	//ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDB())}
+
+	// define routes
+	router.HandleFunc("/customers", ch.GetAllCustomers).Methods(http.MethodGet)
 
 	// starting server
 	fmt.Println("🟢 Listen port 8000")
